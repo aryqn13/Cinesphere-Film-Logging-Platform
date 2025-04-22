@@ -1,6 +1,7 @@
 import React from 'react';
 import { CalendarIcon, FilmIcon, UserIcon, UsersIcon, PencilIcon, SettingsIcon, StarIcon } from 'lucide-react';
 import FilmCard from '../components/FilmCard';
+import { useUser } from '../contexts/UserContext';
 const recentlyWatched = [{
   id: '1',
   title: 'Oppenheimer',
@@ -60,8 +61,11 @@ const favoriteFilms = [{
   rating: 5.0
 }];
 const Profile = () => {
+  const {
+    user
+  } = useUser();
+  if (!user) return null;
   return <div className="w-full bg-gray-900">
-      {/* Profile header */}
       <div className="relative h-48 bg-gradient-to-r from-indigo-900 to-purple-900">
         <div className="absolute inset-0 opacity-20">
           <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba" alt="Profile cover" className="w-full h-full object-cover" />
@@ -71,14 +75,16 @@ const Profile = () => {
         <div className="relative -mt-16 sm:-mt-24 pb-8">
           <div className="flex flex-col sm:flex-row items-center sm:items-end">
             <div className="relative">
-              <img className="h-32 w-32 rounded-full ring-4 ring-gray-900 object-cover" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Profile" />
+              <img className="h-32 w-32 rounded-full ring-4 ring-gray-900 object-cover" src={user.avatar} alt={user.name} />
               <button className="absolute bottom-0 right-0 bg-gray-800 rounded-full p-1.5 border border-gray-700 hover:bg-gray-700 transition-colors">
                 <PencilIcon className="h-4 w-4" />
               </button>
             </div>
             <div className="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
-              <h1 className="text-2xl font-bold">David Wilson</h1>
-              <p className="text-gray-400">@davidwilson • Member since 2021</p>
+              <h1 className="text-2xl font-bold">{user.name}</h1>
+              <p className="text-gray-400">
+                @{user.username} • Member since {user.joinedYear}
+              </p>
             </div>
             <div className="mt-4 sm:mt-0 sm:ml-auto">
               <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-md text-sm font-medium border border-gray-700 transition-colors">
@@ -88,48 +94,40 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <div className="bg-gray-800 rounded-lg p-4 text-center border border-gray-700">
             <div className="flex justify-center mb-2">
               <FilmIcon className="h-6 w-6 text-indigo-400" />
             </div>
-            <div className="text-2xl font-bold">247</div>
+            <div className="text-2xl font-bold">{user.stats.filmsWatched}</div>
             <div className="text-sm text-gray-400">Films watched</div>
           </div>
           <div className="bg-gray-800 rounded-lg p-4 text-center border border-gray-700">
             <div className="flex justify-center mb-2">
               <StarIcon className="h-6 w-6 text-indigo-400" />
             </div>
-            <div className="text-2xl font-bold">183</div>
+            <div className="text-2xl font-bold">{user.stats.filmsRated}</div>
             <div className="text-sm text-gray-400">Films rated</div>
           </div>
           <div className="bg-gray-800 rounded-lg p-4 text-center border border-gray-700">
             <div className="flex justify-center mb-2">
               <UsersIcon className="h-6 w-6 text-indigo-400" />
             </div>
-            <div className="text-2xl font-bold">128</div>
+            <div className="text-2xl font-bold">{user.stats.following}</div>
             <div className="text-sm text-gray-400">Following</div>
           </div>
           <div className="bg-gray-800 rounded-lg p-4 text-center border border-gray-700">
             <div className="flex justify-center mb-2">
               <UserIcon className="h-6 w-6 text-indigo-400" />
             </div>
-            <div className="text-2xl font-bold">96</div>
+            <div className="text-2xl font-bold">{user.stats.followers}</div>
             <div className="text-sm text-gray-400">Followers</div>
           </div>
         </div>
-        {/* Bio */}
         <div className="bg-gray-800 rounded-lg p-6 mb-8 border border-gray-700">
           <h2 className="text-lg font-semibold mb-4">About</h2>
-          <p className="text-gray-300">
-            Film enthusiast and aspiring screenwriter. I love psychological
-            thrillers, sci-fi, and anything directed by Denis Villeneuve. Always
-            looking for recommendations and discussions about film theory and
-            cinematography.
-          </p>
+          <p className="text-gray-300">{user.bio}</p>
         </div>
-        {/* Recently watched */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold flex items-center">
@@ -144,7 +142,6 @@ const Profile = () => {
             {recentlyWatched.map(film => <FilmCard key={film.id} {...film} />)}
           </div>
         </section>
-        {/* Favorites */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold flex items-center">
